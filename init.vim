@@ -35,20 +35,34 @@ Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
+Plug 'gregsexton/gitv'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'airblade/vim-gitgutter'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'majutsushi/tagbar'
+Plug 'xolox/vim-easytags'
 " Plug 'scrooloose/syntastic'
 Plug 'w0rp/ale'
 " Plug 'Yggdroot/indentLine'
 Plug 'sheerun/vim-polyglot'
 Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ozelentok/denite-gtags'
+Plug 'vim-scripts/gtags.vim'
 Plug 'sbdchd/neoformat'
 Plug 'vim-scripts/DfrankUtil' | Plug 'vim-scripts/vimprj'
 Plug 'easymotion/vim-easymotion'
+Plug 'tommcdo/vim-kangaroo'
+Plug 'stfl/meson.vim'
+Plug 'cloudhead/neovim-fuzzy'
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+
 if isdirectory('/usr/local/opt/fzf')
   Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 else
@@ -84,8 +98,11 @@ Plug 'tomasr/molokai'
 "*****************************************************************************
 
 " c
-Plug 'vim-scripts/c.vim', {'for': ['c', 'cpp']}
+" Plug 'vim-scripts/c.vim', {'for': ['c', 'cpp']}
 Plug 'ludwig/split-manpage.vim'
+Plug 'Rip-Rip/clang_complete', {'for': ['c', 'cpp']}
+" Plug 'lyuts/vim-rtags', {'for': ['c', 'cpp']}
+Plug 'spinotech/deoplete-rtags'
 
 
 " elm
@@ -115,6 +132,7 @@ Plug 'jelera/vim-javascript-syntax'
 "" Python Bundle
 Plug 'davidhalter/jedi-vim'
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
+Plug 'heavenshell/vim-pydocstring'
 
 
 " rust
@@ -221,7 +239,7 @@ else
   let g:indentLine_char = '┆'
   let g:indentLine_faster = 1
 
-  
+
   if $COLORTERM == 'gnome-terminal'
     set term=gnome-256color
   else
@@ -229,7 +247,7 @@ else
       set term=xterm-256color
     endif
   endif
-  
+
 endif
 
 
@@ -387,6 +405,8 @@ let g:ale_sign_error = '✗'
 let g:ale_sign_warning = '⚠'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 
+let g:ale_linters = { 'python': ['pylint', 'yapf'], 'rust': ['rls'] }
+
 " Tagbar
 let g:tagbar_autofocus = 1
 
@@ -394,6 +414,9 @@ let g:tagbar_autofocus = 1
 let g:neoformat_enabled_python = ['yapf']
 let g:neoformat_enabled_javascript = ['prettier']
 let g:neoformat_enabled_typescript = ['prettier']
+
+" deoplete
+let g:deoplete#enable_at_startup = 1
 
 " Disable visualbell
 set noerrorbells visualbell t_vb=
@@ -432,6 +455,29 @@ vnoremap K :m '<-2<CR>gv=gv
 autocmd FileType c setlocal tabstop=4 shiftwidth=4 expandtab
 autocmd FileType cpp setlocal tabstop=4 shiftwidth=4 expandtab
 
+let g:clang_auto_select = 0
+let g:clang_close_preview = 0
+let g:clang_complete_auto = 1
+let g:clang_complete_copen = 1
+let g:clang_complete_macros = 1
+let g:clang_complete_patterns = 0
+let g:clang_conceal_snippets = 1
+let g:clang_exec = 'clang'
+let g:clang_hl_errors = 1
+let g:clang_library_path = '/usr/lib'
+let g:clang_periodic_quickfix = 0
+let g:clang_snippets = 1
+let g:clang_snippets_engine = 'ultisnips'
+let g:clang_default_keymappings = 0
+let g:clang_use_library = 1
+let g:clang_omnicppcomplete_compliance = 0
+
+" let g:rtagsUseDefaultMappings = 1
+" let g:rtagsJumpStackMaxSize = 100
+
+" deoplete
+let g:deoplete#complete_method = 'completefunc'
+let g:deoplete#disable_auto_complete = 1
 
 " elm
 " elm-vim
@@ -480,12 +526,12 @@ let g:go_highlight_extra_types = 1
 
 autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=4
 
-augroup completion_preview_close
-  autocmd!
-  if v:version > 703 || v:version == 703 && has('patch598')
-    autocmd CompleteDone * if !&previewwindow && &completeopt =~ 'preview' | silent! pclose | endif
-  endif
-augroup END
+" augroup completion_preview_close
+"   autocmd!
+"   if v:version > 703 || v:version == 703 && has('patch598')
+"     autocmd CompleteDone * if !&previewwindow && &completeopt =~ 'preview' | silent! pclose | endif
+"   endif
+" augroup END
 
 augroup go
 

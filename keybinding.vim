@@ -20,7 +20,8 @@ nmap <leader>cr :source ~/.config/nvim/init.vim<CR>
 " (F)ile
 nmap <leader>fs :w<CR>
 nmap <leader>fg :Rgrep<CR>
-nmap <leader>ff :FZF<CR>
+" nmap <leader>ff :FZF<CR>
+nmap <leader>ff :FuzzyOpen<CR>
 nmap <leader>fo :Neoformat<CR>
 
 " (H)ighlight
@@ -47,6 +48,7 @@ noremap <Leader>gs :Gstatus<CR>
 noremap <Leader>gb :Gblame<CR>
 noremap <Leader>gd :Gvdiff<CR>
 noremap <Leader>gr :Gremove<CR>
+noremap <Leader>gv :Gitv<CR>
 
 " (L)anguage
 augroup go
@@ -75,10 +77,11 @@ augroup END
 
 augroup rust
   autocmd!
-  au FileType rust nmap ld <Plug>(rust-def)
+  au FileType rust nmap <leader>ld zp<Plug>(rust-def)
+  au FileType rust nmap <C-t> zP
   " au FileType rust nmap gs <Plug>(rust-def-split)
   " au FileType rust nmap gx <Plug>(rust-def-vertical)
-  au FileType rust nmap K <Plug>(rust-doc)
+  au FileType rust nmap <leader>K <Plug>(rust-doc)
 augroup END
 
 augroup c
@@ -86,6 +89,12 @@ augroup c
   au FileType c,cpp nmap <leader>ld :DeniteCursorWord -buffer-name=gtags_def gtags_def<cr>
   au FileType c,cpp nmap <leader>lc :DeniteCursorWord -buffer-name=gtags_ref gtags_ref<cr>
   au FileType c,cpp nmap <leader>ls :Denite -buffer-name=gtags_completion gtags_completion<cr>
+  au FileType c,cpp nmap <leader>lf :Denite gtags_def:
+  au FileType c,cpp nmap <F12> :call g:ClangUpdateQuickFix()<cr>
+augroup END
+
+augroup python
+  au FileType python nmap <F12> <Plug>(pydocstring)
 augroup END
 
 " (P)lugin
@@ -106,3 +115,8 @@ nmap <silent> <F1> <ESC>
 nmap <silent> <F2> :NERDTreeToggle<CR>
 nmap <silent> <F3> :TagbarToggle<CR>
 nmap ; :
+
+call denite#custom#map('insert', '<C-j>', '<denite:move_to_next_line>', 'noremap')
+call denite#custom#map('insert', '<C-n>', '<denite:move_to_next_line>', 'noremap')
+call denite#custom#map('insert', '<C-k>', '<denite:move_to_previous_line>', 'noremap')
+call denite#custom#map('insert', '<C-p>', '<denite:move_to_previous_line>', 'noremap')
