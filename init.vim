@@ -43,8 +43,7 @@ Plug 'bronson/vim-trailing-whitespace'
 Plug 'majutsushi/tagbar'
 Plug 'xolox/vim-easytags'
 " Plug 'scrooloose/syntastic'
-Plug 'w0rp/ale'
-" Plug 'Yggdroot/indentLine'
+" Plug 'w0rp/ale'
 Plug 'sheerun/vim-polyglot'
 Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ozelentok/denite-gtags'
@@ -55,10 +54,15 @@ Plug 'easymotion/vim-easymotion'
 Plug 'tommcdo/vim-kangaroo'
 Plug 'stfl/meson.vim'
 Plug 'cloudhead/neovim-fuzzy'
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'roxma/nvim-completion-manager'
 if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'dzhou121/gonvim-fuzzy'
+  Plug 'equalsraf/neovim-gui-shim'
 else
-  Plug 'Shougo/deoplete.nvim'
+  " Plug 'Shougo/deoplete.nvim'
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
@@ -96,6 +100,23 @@ Plug 'tomasr/molokai'
 "*****************************************************************************
 "" Custom bundles
 "*****************************************************************************
+"
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+
+let g:LanguageClient_serverCommands = {
+    \ 'go': ['go-langserver'],
+    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+    \ 'python': ['pyls'],
+    \ 'javascript': ['javascript-typescript-stdio'],
+    \ }
+
+autocmd FileType go setlocal omnifunc=LanguageClient#complete
+autocmd FileType python setlocal omnifunc=LanguageClient#complete
+autocmd FileType rust setlocal omnifunc=LanguageClient#complete
+autocmd FileType javascript setlocal omnifunc=LanguageClient#complete
 
 " c
 " Plug 'vim-scripts/c.vim', {'for': ['c', 'cpp']}
@@ -112,7 +133,8 @@ Plug 'elmcast/elm-vim'
 
 " go
 "" Go Lang Bundle
-Plug 'fatih/vim-go', {'do': ':GoInstallBinaries'}
+Plug 'fatih/vim-go', {'tag': '*', 'do': ':GoInstallBinaries'}
+Plug 'sebdah/vim-delve'
 
 
 " html
@@ -130,14 +152,14 @@ Plug 'jelera/vim-javascript-syntax'
 
 " python
 "" Python Bundle
-Plug 'davidhalter/jedi-vim'
+" Plug 'davidhalter/jedi-vim'
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
 Plug 'heavenshell/vim-pydocstring'
 
 
 " rust
 " Vim racer
-Plug 'racer-rust/vim-racer'
+" Plug 'racer-rust/vim-racer'
 
 " Rust.vim
 Plug 'rust-lang/rust.vim'
@@ -227,7 +249,7 @@ set gfn=Monospace\ 10
 
 if has("gui_running")
   if has("gui_mac") || has("gui_macvim")
-    set guifont=Menlo:h12
+    set guifont=Menlo:h9
     set transparency=7
   endif
 else
@@ -408,7 +430,49 @@ let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_linters = { 'python': ['pylint', 'yapf'], 'rust': ['rls'] }
 
 " Tagbar
-let g:tagbar_autofocus = 1
+let g:tagbar_autofocus = 0
+let g:tagbar_type_go = {
+	\ 'ctagstype' : 'go',
+	\ 'kinds'     : [
+		\ 'p:package',
+		\ 'i:imports:1',
+		\ 'c:constants',
+		\ 'v:variables',
+		\ 't:types',
+		\ 'n:interfaces',
+		\ 'w:fields',
+		\ 'e:embedded',
+		\ 'm:methods',
+		\ 'r:constructor',
+		\ 'f:functions'
+	\ ],
+	\ 'sro' : '.',
+	\ 'kind2scope' : {
+		\ 't' : 'ctype',
+		\ 'n' : 'ntype'
+	\ },
+	\ 'scope2kind' : {
+		\ 'ctype' : 't',
+		\ 'ntype' : 'n'
+	\ },
+	\ 'ctagsbin'  : 'gotags',
+	\ 'ctagsargs' : '-sort -silent'
+\ }
+
+
+let g:tagbar_type_rust = {
+\ 'ctagstype' : 'rust',
+\ 'kinds' : [
+    \'T:types,type definitions',
+    \'f:functions,function definitions',
+    \'g:enum,enumeration names',
+    \'s:structure names',
+    \'m:modules,module names',
+    \'c:consts,static constants',
+    \'t:traits',
+    \'i:impls,trait implementations',
+\]
+\}
 
 " neoformat
 let g:neoformat_enabled_python = ['yapf']
@@ -446,6 +510,9 @@ vmap > >gv
 "" Move visual block
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
+
+"" EasyMotion
+" let g:EasyMotion_do_mapping = 0
 
 "*****************************************************************************
 "" Custom configs
@@ -508,6 +575,8 @@ endfunction
 let g:go_list_type = "quickfix"
 let g:go_fmt_command = "goimports"
 let g:go_fmt_fail_silently = 1
+let g:go_gocode_autobuild = 1
+let g:go_gocode_propose_builtins = 1
 let g:syntastic_go_checkers = ['golint', 'govet']
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 
@@ -593,8 +662,8 @@ let g:airline#extensions#virtualenv#enabled = 1
 
 " Syntax highlight
 " Default highlight is better than polyglot
-let g:polyglot_disabled = ['python']
-let python_highlight_all = 1
+" let g:polyglot_disabled = ['python']
+" let python_highlight_all = 1
 
 "*****************************************************************************
 "*****************************************************************************
@@ -647,3 +716,12 @@ endif
 if filereadable(expand("~/.config/nvim/keybinding.vim"))
   source ~/.config/nvim/keybinding.vim
 endif
+
+if !exists("g:GuiLoaded")
+    let g:gonvim_start_fullscreen = 0
+    let g:gonvim_draw_tabline = 0
+    set noshowmode
+    set noruler
+    set noshowcmd
+    set laststatus=2
+end

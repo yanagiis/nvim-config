@@ -2,42 +2,44 @@
 
 " Map leader to space
 let mapleader=' '
-nmap <leader><space>w <Plug>(easymotion-bd-w)
-nmap <leader><space>f <Plug>(easymotion-bd-f)
-nmap <leader><space>l <Plug>(easymotion-bd-jk)
+
+" nnoremap <leader><space>f <Plug>(easymotion-bd-f)
+" nnoremap <leader><space>w <Plug>(easymotion-bd-w)
+" nnoremap <leader><space>b <Plug>(easymotion-bd-b)
 
 " (B)uffer
-nmap <leader>bb :Buffers<CR>
-nmap <leader>bp :bp<CR>
-nmap <leader>bn :bn<CR>
-nmap <leader>bc :bd<CR>
+nnoremap <leader>bb :Buffers<CR>
+nnoremap <leader>bp :bp<CR>
+nnoremap <leader>bn :bn<CR>
+nnoremap <leader>bc :bd<CR>
 
 " (C)onfig
-nmap <leader>cc :edit ~/.config/nvim/init.vim<CR>
-nmap <leader>ck :edit ~/.config/nvim/keybinding.vim<CR>
-nmap <leader>cr :source ~/.config/nvim/init.vim<CR>
+nnoremap <leader>cc :edit ~/.config/nvim/init.vim<CR>
+nnoremap <leader>ck :edit ~/.config/nvim/keybinding.vim<CR>
+nnoremap <leader>cr :source ~/.config/nvim/init.vim<CR>
 
 " (F)ile
-nmap <leader>fs :w<CR>
-nmap <leader>fg :Rgrep<CR>
-" nmap <leader>ff :FZF<CR>
-nmap <leader>ff :FuzzyOpen<CR>
-nmap <leader>fo :Neoformat<CR>
+nnoremap <leader>fs :w<CR>
+nnoremap <leader>fS :w !sudo tee %<CR>
+nnoremap <leader>fg :Rgrep<CR>
+" nnoremap <leader>ff :FZF<CR>
+nnoremap <leader>ff :FuzzyOpen<CR>
+nnoremap <leader>fo :Neoformat<CR>
 
 " (H)ighlight
-nmap <leader> :hl<CR>
+nnoremap <leader> :hl<CR>
 
 " (S)hell and session
 if g:vim_bootstrap_editor == 'nvim'
-  nmap <silent> <leader>sh :terminal<CR>
+  nnoremap <silent> <leader>sh :terminal<CR>
 else
-  nmap <silent> <leader>sh :VimShellCreate<CR>
+  nnoremap <silent> <leader>sh :VimShellCreate<CR>
 endif
 
-nmap <leader>so :OpenSession<Space>
-nmap <leader>ss :SaveSession<Space>
-nmap <leader>sd :DeleteSession<CR>
-nmap <leader>sc :CloseSession<CR>
+nnoremap <leader>so :OpenSession<Space>
+nnoremap <leader>ss :SaveSession<Space>
+nnoremap <leader>sd :DeleteSession<CR>
+nnoremap <leader>sc :CloseSession<CR>
 
 " (G)it
 noremap <Leader>ga :Gwrite<CR>
@@ -52,69 +54,101 @@ noremap <Leader>gv :Gitv<CR>
 
 " (L)anguage
 augroup go
+  autocmd!
   " vim-go
-  au FileType go nmap <Leader>ld <Plug>(go-def-vertical)
-  au FileType go nmap K <Plug>(go-doc-vertical)
-  " au FileType go nmap <Leader>lb <Plug>(go-doc-browser)
+  au FileType go nnoremap <Leader>ld <Plug>(go-def-vertical)
+  au FileType go nnoremap K <Plug>(go-doc-vertical)
+  " au FileType go nnoremap <Leader>lb <Plug>(go-doc-browser)
+  au FileType go nnoremap <buffer>
+    \ <leader>ld :call LanguageClient_textDocument_definition()<cr>
+  au FileType go nnoremap <buffer>
+    \ <leader>li :call LanguageClient_textDocument_hover()<cr>
+  au FileType go nnoremap <buffer>
+      \ <leader>ln :call LanguageClient_textDocument_rename()<cr>
+  au FileType go nnoremap <buffer>
+      \ <leader>lc :call LanguageClient_textDocument_references()<cr>
 
-  au FileType go nmap <leader>lr  <Plug>(go-run)
-  au FileType go nmap <leader>lt  <Plug>(go-test)
-  au FileType go nmap <Leader>lgt <Plug>(go-coverage-toggle)
-  au FileType go nmap <Leader>li <Plug>(go-info)
-  au FileType go nmap <silent> <Leader>ll <Plug>(go-metalinter)
-  au FileType go nmap <C-g> :GoDecls<cr>
+  au FileType go nnoremap <leader>lr  <Plug>(go-run)
+  au FileType go nnoremap <leader>lt  <Plug>(go-test)
+  au FileType go nnoremap <Leader>lgt <Plug>(go-coverage-toggle)
+  au FileType go nnoremap <silent> <Leader>ll <Plug>(go-metalinter)
+  au FileType go nnoremap <C-g> :GoDecls<cr>
   au FileType go imap <C-g> <esc>:<C-u>GoDecls<cr>
-  au FileType go nmap <leader>lrb :<C-u>call <SID>build_go_files()<CR>
 augroup END
 
+augroup python
+  autocmd!
+  au FileType python nnoremap <buffer>
+    \ <leader>ld :call LanguageClient_textDocument_definition()<cr>
+  au FileType python nnoremap <buffer>
+    \ <leader>li :call LanguageClient_textDocument_hover()<cr>
+  au FileType python nnoremap <buffer>
+      \ <leader>ln :call LanguageClient_textDocument_rename()<cr>
+  au FileType python nnoremap <buffer>
+      \ <leader>lc :call LanguageClient_textDocument_references()<cr>
+augroup END
   " jedi-vim
-  let g:jedi#goto_assignments_command = "<leader>lg"
-  let g:jedi#goto_definitions_command = "<leader>ld"
-  let g:jedi#documentation_command = "K"
-  let g:jedi#usages_command = "<leader>ln"
-  let g:jedi#rename_command = "<leader>lr"
-  let g:jedi#completions_command = "<C-Space>"
+  " let g:jedi#goto_assignments_command = "<leader>lg"
+  " let g:jedi#goto_definitions_command = "<leader>ld"
+  " let g:jedi#documentation_command = "K"
+  " let g:jedi#usages_command = "<leader>ln"
+  " let g:jedi#rename_command = "<leader>lr"
+  " let g:jedi#completions_command = "<C-Space>"
 
 augroup rust
   autocmd!
-  au FileType rust nmap <leader>ld zp<Plug>(rust-def)
-  au FileType rust nmap <C-t> zP
-  " au FileType rust nmap gs <Plug>(rust-def-split)
-  " au FileType rust nmap gx <Plug>(rust-def-vertical)
-  au FileType rust nmap <leader>K <Plug>(rust-doc)
+  au FileType rust nnoremap <buffer>
+    \ <leader>ld :call LanguageClient_textDocument_definition()<cr>
+  au FileType rust nnoremap <buffer>
+    \ <leader>li :call LanguageClient_textDocument_hover()<cr>
+  au FileType rust nnoremap <buffer>
+      \ <leader>ln :call LanguageClient_textDocument_rename()<cr>
+  au FileType rust nnoremap <buffer>
+      \ <leader>lc :call LanguageClient_textDocument_references()<cr>
+  " au FileType rust nnoremap <leader>ld zp<Plug>(rust-def)
+  " au FileType rust nnoremap <C-t> zP
+  " au FileType rust nnoremap gs <Plug>(rust-def-split)
+  " au FileType rust nnoremap gx <Plug>(rust-def-vertical)
+  " au FileType rust nnoremap <leader>K <Plug>(rust-doc)
 augroup END
 
 augroup c
   autocmd!
-  au FileType c,cpp nmap <leader>ld :DeniteCursorWord -buffer-name=gtags_def gtags_def<cr>
-  au FileType c,cpp nmap <leader>lc :DeniteCursorWord -buffer-name=gtags_ref gtags_ref<cr>
-  au FileType c,cpp nmap <leader>ls :Denite -buffer-name=gtags_completion gtags_completion<cr>
-  au FileType c,cpp nmap <leader>lf :Denite gtags_def:
-  au FileType c,cpp nmap <F12> :call g:ClangUpdateQuickFix()<cr>
+  au FileType c,cpp nnoremap <leader>ld :DeniteCursorWord -buffer-name=gtags_def gtags_def<cr>
+  au FileType c,cpp nnoremap <leader>lc :DeniteCursorWord -buffer-name=gtags_ref gtags_ref<cr>
+  au FileType c,cpp nnoremap <leader>ls :Denite -buffer-name=gtags_completion gtags_completion<cr>
+  au FileType c,cpp nnoremap <leader>lf :Denite gtags_def:
+  au FileType c,cpp nnoremap <F12> :call g:ClangUpdateQuickFix()<cr>
 augroup END
 
 augroup python
-  au FileType python nmap <F12> <Plug>(pydocstring)
+  au FileType python nnoremap <F12> <Plug>(pydocstring)
 augroup END
 
 " (P)lugin
-nmap <leader>pi :PlugInstall<CR>
-nmap <leader>pu :PlugUpdate<CR>
+nnoremap <leader>pi :PlugInstall<CR>
+nnoremap <leader>pu :PlugUpdate<CR>
 
 " (W)indow
-nmap <leader>wh <C-w>h
-nmap <leader>wj <C-w>j
-nmap <leader>wk <C-w>k
-nmap <leader>wl <C-w>l
+nnoremap <leader>wh <C-w>h
+nnoremap <leader>wj <C-w>j
+nnoremap <leader>wk <C-w>k
+nnoremap <leader>wl <C-w>l
 
 " Set working directory
-nmap <leader>. :lcd %:p:h<CR>
+nnoremap <leader>. :lcd %:p:h<CR>
 
 " Function key
-nmap <silent> <F1> <ESC>
-nmap <silent> <F2> :NERDTreeToggle<CR>
-nmap <silent> <F3> :TagbarToggle<CR>
-nmap ; :
+nnoremap <silent> <F1> <ESC>
+nnoremap <silent> <F2> :NERDTreeToggle<CR>
+nnoremap <silent> <F3> :TagbarToggle<CR>
+
+augroup go
+    au FileType go nnoremap <F5> :DlvDebug<CR>
+    au FileType go nnoremap <F9> :DlvToggleBreakpoint<CR>
+augroup END
+
+nnoremap ; :
 
 call denite#custom#map('insert', '<C-j>', '<denite:move_to_next_line>', 'noremap')
 call denite#custom#map('insert', '<C-n>', '<denite:move_to_next_line>', 'noremap')
