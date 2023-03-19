@@ -85,6 +85,8 @@ local config = {
           -- "go",
         },
         ignore_filetypes = { -- disable format on save for specified filetypes
+          "c",
+          "cpp",
           -- "python",
         },
       },
@@ -256,15 +258,16 @@ local config = {
       "jose-elias-alvarez/null-ls.nvim",
       opts = function(_, config)
         -- config variable is the default configuration table for the setup function call
-        -- local null_ls = require "null-ls"
+        local null_ls = require "null-ls"
 
         -- Check supported formatters and linters
         -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
         -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
         config.sources = {
           -- Set a formatter
-          -- null_ls.builtins.formatting.stylua,
-          -- null_ls.builtins.formatting.prettier,
+          null_ls.builtins.formatting.stylua,
+          null_ls.builtins.formatting.prettier,
+          null_ls.builtins.formatting.clang_format,
         }
         return config -- return final config table
       end,
@@ -280,7 +283,20 @@ local config = {
       "williamboman/mason-lspconfig.nvim",
       -- overrides `require("mason-lspconfig").setup(...)`
       opts = {
-        -- ensure_installed = { "lua_ls" },
+        ensure_installed = {
+          "bashls",
+          "clangd",
+          "cmake",
+          "dockerls",
+          "golangci_lint_ls",
+          "gopls",
+          "jsonls",
+          "lua_ls",
+          "pylsp",
+          "rust_analyzer",
+          "svelte",
+          "yamlls",
+        },
       },
     },
     -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
@@ -288,7 +304,16 @@ local config = {
       "jay-babu/mason-null-ls.nvim",
       -- overrides `require("mason-null-ls").setup(...)`
       opts = {
-        -- ensure_installed = { "prettier", "stylua" },
+        ensure_installed = {
+          "prettier",
+          "stylua",
+          "clang_format",
+          "hadolint",
+          "golangci_lint",
+          "golines",
+          "jq",
+          "shfmt",
+        },
       },
     },
     {
