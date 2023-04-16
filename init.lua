@@ -107,9 +107,7 @@ local config = {
       },
     },
     -- add to the global LSP on_attach function
-    -- on_attach = function(client, bufnr)
-    -- end,
-
+    on_attach = function(client, bufnr) require("lsp-inlayhints").on_attach(client, bufnr) end,
     -- override the LSP setup handler function based on server name
     -- setup_handlers = {
     --   -- first function changes the default setup handler
@@ -336,6 +334,10 @@ local config = {
       "nvim-telescope/telescope-fzy-native.nvim",
       run = "make",
       config = function() require("telescope").load_extension "fzy_native" end,
+    },
+    {
+      "lvimuser/lsp-inlayhints.nvim",
+      config = function() require("lsp-inlayhints").setup() end,
     },
     {
       "rcarriga/nvim-notify",
