@@ -275,7 +275,7 @@ local config = {
     {
       "nvim-treesitter/nvim-treesitter",
       opts = {
-        -- ensure_installed = { "lua" },
+        ensure_installed = { "lua", "python", "c", "cpp", "rust", "go", "svelte", "typescript", "javascript" },
       },
     },
     -- use mason-lspconfig to configure LSP installations
@@ -295,7 +295,9 @@ local config = {
           "pylsp",
           "rust_analyzer",
           "svelte",
+          "tssserver",
           "yamlls",
+          "cssls",
         },
       },
     },
@@ -308,9 +310,11 @@ local config = {
           "prettier",
           "stylua",
           "clang_format",
+          "cmakelang",
           "hadolint",
           "golangci_lint",
           "golines",
+          "goimports",
           "jq",
           "shfmt",
         },
