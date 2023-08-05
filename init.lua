@@ -145,9 +145,6 @@ local config = {
     n = {
       -- second key is the lefthand side of the map
       -- mappings seen under group name "Buffer"
-      ["<leader><space>w"] = { "<cmd>:HopWord<cr>", desc = "Hop any word" },
-      ["<leader><space>b"] = { "<cmd>:HopWord<cr>", desc = "Hop any word" },
-      ["<leader><space>c"] = { "<cmd>:HopChar1<cr>", desc = "Hop any char" },
       [";"] = { ":" },
     },
     t = {
@@ -275,7 +272,7 @@ local config = {
     {
       "nvim-treesitter/nvim-treesitter",
       opts = {
-        ensure_installed = { "lua", "python", "c", "cpp", "rust", "go", "svelte", "typescript", "javascript" },
+        ensure_installed = { "lua", "python", "c", "cpp", "rust", "go", "svelte", "typescript", "javascript", "cmake" },
       },
     },
     -- use mason-lspconfig to configure LSP installations
@@ -328,13 +325,6 @@ local config = {
       },
     },
     {
-      "phaazon/hop.nvim",
-      branch = "v2",
-      config = function() require("hop").setup {} end,
-      lazy = false,
-      opts = {},
-    },
-    {
       "nvim-telescope/telescope-fzy-native.nvim",
       run = "make",
       config = function() require("telescope").load_extension "fzy_native" end,
@@ -350,6 +340,10 @@ local config = {
     {
       "nvim-telescope/telescope-fzf-native.nvim",
       enabled = false,
+    },
+    {
+      "ggandor/leap.nvim",
+      config = function() require('leap').add_default_mappings() end,
     },
   },
   -- Customize Heirline options
