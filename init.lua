@@ -342,8 +342,16 @@ local config = {
       enabled = false,
     },
     {
-      "ggandor/leap.nvim",
-      config = function() require('leap').add_default_mappings() end,
+      "folke/flash.nvim",
+      event = "VeryLazy",
+      opts = {},
+      keys = {
+        { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+        { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+        { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+        { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+        { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+      },
     },
   },
   -- Customize Heirline options
@@ -376,20 +384,7 @@ local config = {
   -- This function is run last and is a good place to configuring
   -- augroups/autocommands and custom filetypes also this just pure lua so
   -- anything that doesn't fit in the normal config locations above can go here
-  polish = function()
-    -- Set up custom filetypes
-    -- vim.filetype.add {
-    --   extension = {
-    --     foo = "fooscript",
-    --   },
-    --   filename = {
-    --     ["Foofile"] = "fooscript",
-    --   },
-    --   pattern = {
-    --     ["~/%.config/foo/.*"] = "fooscript",
-    --   },
-    -- }
-  end,
+  polish = function() end,
 }
 
 return config
