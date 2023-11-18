@@ -46,6 +46,8 @@ local config = {
       wrap = false, -- sets vim.opt.wrap
       tabstop = 4, -- Number of space in a tab
       showtabline = 4, -- always display tabline
+      swapfile = false,
+      colorcolumn = "80",
     },
     g = {
       mapleader = " ", -- sets vim.g.mapleader
@@ -145,6 +147,10 @@ local config = {
     n = {
       -- second key is the lefthand side of the map
       -- mappings seen under group name "Buffer"
+      ["<leader>lg"] = { "<cmd>:lua require('neogen').generate()<CR>", desc = "generate comment" },
+      ["<leader><space>w"] = { "<cmd>:HopWord<cr>", desc = "Hop any word" },
+      ["<leader><space>b"] = { "<cmd>:HopWord<cr>", desc = "Hop any word" },
+      ["<leader><space>c"] = { "<cmd>:HopChar1<cr>", desc = "Hop any char" },
       [";"] = { ":" },
     },
     t = {
@@ -342,9 +348,17 @@ local config = {
       enabled = false,
     },
     {
+      "phaazon/hop.nvim",
+      branch = "v2",
+      config = function() require("hop").setup {} end,
+      lazy = false,
+      opts = {},
+    },
+    {
       "folke/flash.nvim",
       event = "VeryLazy",
       opts = {},
+      config = function() require("flash").toggle(false) end,
       keys = {
         { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
         { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
@@ -352,6 +366,23 @@ local config = {
         { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
         { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
       },
+    },
+    {
+      "danymat/neogen",
+      dependencies = "nvim-treesitter/nvim-treesitter",
+      config = true,
+      -- Uncomment next line if you want to follow only stable versions
+      -- version = "*"
+    },
+    {
+      "pwntester/octo.nvim",
+      lazy = false,
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-telescope/telescope.nvim",
+        "nvim-tree/nvim-web-devicons",
+      },
+      config = function() require("octo").setup() end,
     },
   },
   -- Customize Heirline options
