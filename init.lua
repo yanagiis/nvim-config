@@ -102,14 +102,8 @@ local config = {
       --   return true
       -- end
     },
-    -- easily add or disable built in mappings added during LSP attaching
-    mappings = {
-      n = {
-        -- ["<leader>lf"] = false -- disable formatting keymap
-      },
-    },
     -- add to the global LSP on_attach function
-    on_attach = function(client, bufnr) require("lsp-inlayhints").on_attach(client, bufnr) end,
+    -- on_attach = function(client, bufnr) end,
     -- override the LSP setup handler function based on server name
     -- setup_handlers = {
     --   -- first function changes the default setup handler
@@ -170,72 +164,6 @@ local config = {
   },
   -- Configure plugins
   plugins = {
-    -- You can disable default plugins as follows:
-    -- { "max397574/better-escape.nvim", enabled = false },
-    --
-    -- You can also easily customize additional setup of plugins that is outside of the plugin's setup call
-    -- {
-    --   "L3MON4D3/LuaSnip",
-    --   config = function(plugin, opts)
-    --     require "plugins.configs.luasnip"(plugin, opts) -- include the default astronvim config that calls the setup call
-    --     -- add more custom luasnip configuration such as filetype extend or custom snippets
-    --     local luasnip = require "luasnip"
-    --     luasnip.filetype_extend("javascript", { "javascriptreact" })
-    --   end,
-    -- },
-    -- {
-    --   "windwp/nvim-autopairs",
-    --   config = function(plugin, opts)
-    --     require "plugins.configs.nvim-autopairs"(plugin, opts) -- include the default astronvim config that calls the setup call
-    --     -- add more custom autopairs configuration such as custom rules
-    --     local npairs = require "nvim-autopairs"
-    --     local Rule = require "nvim-autopairs.rule"
-    --     local cond = require "nvim-autopairs.conds"
-    --     npairs.add_rules(
-    --       {
-    --         Rule("$", "$", { "tex", "latex" })
-    --           -- don't add a pair if the next character is %
-    --           :with_pair(cond.not_after_regex "%%")
-    --           -- don't add a pair if  the previous character is xxx
-    --           :with_pair(
-    --             cond.not_before_regex("xxx", 3)
-    --           )
-    --           -- don't move right when repeat character
-    --           :with_move(cond.none())
-    --           -- don't delete if the next character is xx
-    --           :with_del(cond.not_after_regex "xx")
-    --           -- disable adding a newline when you press <cr>
-    --           :with_cr(cond.none()),
-    --       },
-    --       -- disable for .vim files, but it work for another filetypes
-    --       Rule("a", "a", "-vim")
-    --     )
-    --   end,
-    -- },
-    -- By adding to the which-key config and using our helper function you can add more which-key registered bindings
-    -- {
-    --   "folke/which-key.nvim",
-    --   config = function(plugin, opts)
-    --     require "plugins.configs.which-key"(plugin, opts)
-    --     -- Add bindings which show up as group name
-    --     local wk = require "which-key"
-    --     wk.register({
-    --       b = { name = "Buffer" },
-    --     }, { mode = "n", prefix = "<leader>" })
-    --   end,
-    -- },
-
-    -- You can also add new plugins here as well:
-    -- Add plugins, the lazy syntax
-    -- "andweeb/presence.nvim",
-    -- {
-    --   "ray-x/lsp_signature.nvim",
-    --   event = "BufRead",
-    --   config = function()
-    --     require("lsp_signature").setup()
-    --   end,
-    -- },
-
     -- Plugin entries can also be used to override the default options for plugins as well
     {
       "goolord/alpha-nvim",
@@ -256,6 +184,24 @@ local config = {
         }
         return opts
       end,
+    },
+    {
+      "AstroNvim/astrocommunity",
+      { import = "astrocommunity.lsp.lsp-inlayhints-nvim" },
+      {
+        import = "astrocommunity.motion.flash-nvim",
+        keys = {
+          { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+          { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+          { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+          { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+          { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+        },
+      },
+      { import = "astrocommunity.editing-support.neogen" },
+      { import = "astrocommunity.git.octo-nvim" },
+      { import = "astrocommunity.git.blame-nvim" },
+      { import = "astrocommunity.utility.telescope-fzy-native-nvim" },
     },
     {
       "jose-elias-alvarez/null-ls.nvim",
@@ -331,15 +277,6 @@ local config = {
       },
     },
     {
-      "nvim-telescope/telescope-fzy-native.nvim",
-      run = "make",
-      config = function() require("telescope").load_extension "fzy_native" end,
-    },
-    {
-      "lvimuser/lsp-inlayhints.nvim",
-      config = function() require("lsp-inlayhints").setup() end,
-    },
-    {
       "rcarriga/nvim-notify",
       enabled = false,
     },
@@ -354,63 +291,6 @@ local config = {
       lazy = false,
       opts = {},
     },
-    {
-      "folke/flash.nvim",
-      event = "VeryLazy",
-      opts = {},
-      config = function() require("flash").toggle(false) end,
-      keys = {
-        { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-        { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-        { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-        { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-        { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
-      },
-    },
-    {
-      "danymat/neogen",
-      dependencies = "nvim-treesitter/nvim-treesitter",
-      config = true,
-      -- Uncomment next line if you want to follow only stable versions
-      -- version = "*"
-    },
-    {
-      "pwntester/octo.nvim",
-      lazy = false,
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-        "nvim-telescope/telescope.nvim",
-        "nvim-tree/nvim-web-devicons",
-      },
-      config = function() require("octo").setup() end,
-    },
-  },
-  -- Customize Heirline options
-  heirline = {
-    -- -- Customize different separators between sections
-    -- separators = {
-    --   breadcrumbs = " > ",
-    --   tab = { "", "" },
-    -- },
-    -- -- Customize colors for each element each element has a `_fg` and a `_bg`
-    -- colors = function(colors)
-    --   colors.git_branch_fg = require("core.utils").get_hlgroup "Conditional"
-    --   return colors
-    -- end,
-    -- -- Customize attributes of highlighting in Heirline components
-    -- attributes = {
-    --   -- styling choices for each heirline element, check possible attributes with `:h attr-list`
-    --   git_branch = { bold = true }, -- bold the git branch statusline component
-    -- },
-    -- -- Customize if icons should be highlighted
-    -- icon_highlights = {
-    --   breadcrumbs = false, -- LSP symbols in the breadcrumbs
-    --   file_icon = {
-    --     winbar = false, -- Filetype icon in the winbar inactive windows
-    --     statusline = true, -- Filetype icon in the statusline
-    --     tabline = true, -- Filetype icon in the tabline
-    --   },
-    -- },
   },
   -- This function is run last and is a good place to configuring
   -- augroups/autocommands and custom filetypes also this just pure lua so
