@@ -117,6 +117,16 @@ local config = {
 
     -- Add overrides for LSP server settings, the keys are the name of the server
     config = {
+      clangd = function()
+        return {
+          cmd = {
+            "clangd",
+            "--clang-tidy",
+            "--clang-tidy-checks=performance-*,bugprone-*",
+            "--completion-style=detailed",
+          },
+        }
+      end,
       -- example for addings schemas to yamlls
       -- yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
       --   settings = {
