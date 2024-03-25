@@ -1,311 +1,384 @@
---              AstroNvim Configuration Table
--- All configuration changes should go inside of the table below
+-- Read the docs: https://www.lunarvim.org/docs/configuration
+-- Example configs: https://github.com/LunarVim/starter.lvim
+-- Video Tutorials: https://www.youtube.com/watch?v=sFA9kX-Ud_c&list=PLhoH5vyxr6QqGu0i7tt_XoVK9v-KvZ3m6
+-- Forum: https://www.reddit.com/r/lunarvim/
+-- Discord: https://discord.com/invite/Xb9B4Ny
 
--- A split up user configuration example can be found at: https://github.com/AstroNvim/split_user_example
+lvim.builtin.treesitter.highlight.enable = true
+lvim.colorscheme = "tokyodark"
+vim.api.nvim_set_keymap("n", ";", ":", { silent = true })
 
--- You can think of a Lua "table" as a dictionary like data structure the
--- normal format is "key = value". These also handle array like data structures
--- where a value with no key simply has an implicit numeric key
-local config = {
-  -- Configure AstroNvim updates
-  updater = {
-    remote = "origin", -- remote to use
-    channel = "stable", -- "stable" or "nightly"
-    version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
-    branch = "main", -- branch name (NIGHTLY ONLY)
-    commit = nil, -- commit hash (NIGHTLY ONLY)
-    pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
-    skip_prompts = false, -- skip prompts about breaking changes
-    show_changelog = true, -- show the changelog after performing an update
-    auto_quit = false, -- automatically quit the current session after a successful update
-    -- remotes = { -- easily add new remotes to track
-    --   ["remote_name"] = "https://remote_url.come/repo.git", -- full remote url
-    --   ["remote2"] = "github_user/repo", -- GitHub user/repo shortcut,
-    --   ["remote3"] = "github_user", -- GitHub user assume AstroNvim fork
-    -- },
-  },
-  -- Set colorscheme to use
-  colorscheme = "astrodark",
-  -- Add highlight groups in any theme
-  highlights = {
-    -- init = { -- this table overrides highlights in all themes
-    --   Normal = { bg = "#000000" },
-    -- }
-    -- duskfox = { -- a table of overrides/changes to the duskfox theme
-    --   Normal = { bg = "#000000" },
-    -- },
-  },
-  -- set vim options here (vim.<first_key>.<second_key> = value)
-  options = {
-    opt = {
-      -- set to true or false etc.
-      relativenumber = false, -- sets vim.opt.relativenumber
-      number = true, -- sets vim.opt.number
-      spell = false, -- sets vim.opt.spell
-      signcolumn = "auto", -- sets vim.opt.signcolumn to auto
-      wrap = false, -- sets vim.opt.wrap
-      tabstop = 4, -- Number of space in a tab
-      showtabline = 4, -- always display tabline
-      swapfile = false,
-      colorcolumn = "80",
-    },
-    g = {
-      mapleader = " ", -- sets vim.g.mapleader
-      autoformat_enabled = true, -- enable or disable auto formatting at start (lsp.formatting.format_on_save must be enabled)
-      cmp_enabled = true, -- enable completion at start
-      autopairs_enabled = false, -- enable autopairs at start
-      diagnostics_enabled = true, -- enable diagnostics at start
-      status_diagnostics_enabled = true, -- enable diagnostics in statusline
-      icons_enabled = true, -- disable icons in the UI (disable if no nerd font is available, requires :PackerSync after changing)
-      ui_notifications_enabled = true, -- disable notifications when toggling UI elements
-    },
-  },
-  -- If you need more control, you can use the function()...end notation
-  -- options = function(local_vim)
-  --   local_vim.opt.relativenumber = true
-  --   local_vim.g.mapleader = " "
-  --   local_vim.opt.whichwrap = vim.opt.whichwrap - { 'b', 's' } -- removing option from list
-  --   local_vim.opt.shortmess = vim.opt.shortmess + { I = true } -- add to option list
-  --
-  --   return local_vim
-  -- end,
+-- auto install treesitter parsers
+lvim.builtin.treesitter.ensure_installed = { "cpp", "c", "lua", "rust", "toml", "go", "gomod" }
+lvim.builtin.telescope.defaults.layout_config.width = 0.8
+lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 75
 
-  -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
-  diagnostics = {
-    virtual_text = true,
-    underline = true,
+-- Additional Plugins
+lvim.plugins = {
+  -- colorschemes
+  {
+    "tiagovla/tokyodark.nvim",
+    opts = {
+      -- custom options here
+    },
+    config = function(_, opts)
+      require("tokyodark").setup(opts) -- calling setup is optional
+      vim.cmd [[colorscheme tokyodark]]
+    end,
   },
-  -- Extend LSP configuration
-  lsp = {
-    -- enable servers that you already have installed without mason
-    servers = {
-      -- "pyright"
-    },
-    formatting = {
-      -- control auto formatting on save
-      format_on_save = {
-        enabled = false, -- enable or disable format on save globally
-        allow_filetypes = { -- enable format on save for specified filetypes only
-          -- "go",
+  -- session
+  {
+    "ethanholz/nvim-lastplace",
+    event = "BufRead",
+    config = function()
+      require("nvim-lastplace").setup({
+        lastplace_ignore_buftype = { "quickfix", "nofile", "help" },
+        lastplace_ignore_filetype = {
+          "gitcommit", "gitrebase", "svn", "hgcommit",
         },
-        ignore_filetypes = { -- disable format on save for specified filetypes
-          "c",
-          "cpp",
-          -- "python",
-        },
-      },
-      disabled = { -- disable formatting capabilities for the listed language servers
-        -- "lua_ls",
-      },
-      timeout_ms = 1000, -- default format timeout
-      -- filter = function(client) -- fully override the default formatting function
-      --   return true
-      -- end
+        lastplace_open_folds = true,
+      })
+    end,
+  },
+  -- motion
+  {
+    "phaazon/hop.nvim",
+    event = "BufRead",
+    config = function()
+      require("hop").setup()
+      vim.api.nvim_set_keymap("n", "<leader><space>w", ":HopWord<cr>", { silent = true })
+      vim.api.nvim_set_keymap("n", "<leader><space>b", ":HopWord<cr>", { silent = true })
+    end,
+  },
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    ---@type Flash.Config
+    opts = {},
+    -- stylua: ignore
+    keys = {
+      { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
+      { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+      { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+      { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
     },
-    -- add to the global LSP on_attach function
-    -- on_attach = function(client, bufnr) end,
-    -- override the LSP setup handler function based on server name
-    -- setup_handlers = {
-    --   -- first function changes the default setup handler
-    --   function(server, opts) require("lspconfig")[server].setup(opts) end,
-    --   -- keys for a specific server name will be used for that LSP
-    --   lua_ls = function(server, opts)
-    --     -- custom lua_ls setup handler
-    --     require("lspconfig")["lua_ls"].setup(opts)
-    --   end,
-    -- },
+  },
+  -- finder
+  {
+    "nvim-telescope/telescope-fzy-native.nvim",
+    build = "make",
+    event = "BufRead",
+  },
+  -- git
+  {
+    "sindrets/diffview.nvim",
+    event = "BufRead",
+  },
+  {
+    "f-person/git-blame.nvim",
+    event = "BufRead",
+    config = function()
+      vim.cmd "highlight default link gitblame SpecialComment"
+      require("gitblame").setup { enabled = false }
+    end,
+  },
+  {
+    "pwntester/octo.nvim",
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim',
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function()
+      require("octo").setup()
+    end,
+  },
+  -- languages {
+  -- lsp
+  {
+    "simrat39/symbols-outline.nvim",
+    config = function()
+      require('symbols-outline').setup()
+      lvim.builtin.which_key.mappings["lt"] = { ":SymbolsOutline<CR>", "SymbolsOutline" }
+    end
+  },
+  {
+    "folke/trouble.nvim",
+    cmd = "TroubleToggle",
+  },
+  -- c
+  "p00f/clangd_extensions.nvim",
+  -- go
+  "olexsmir/gopher.nvim",
+  "leoluz/nvim-dap-go",
+  -- rust
+  "simrat39/rust-tools.nvim",
+  {
+    "saecki/crates.nvim",
+    version = "v0.3.0",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("crates").setup {
+        null_ls = {
+          enabled = true,
+          name = "crates.nvim",
+        },
+        popup = {
+          border = "rounded",
+        },
+      }
+    end,
+  },
+  {
+    "j-hui/fidget.nvim",
+    config = function()
+      require("fidget").setup()
+    end,
+  },
+  -- }
+}
+lvim.builtin.autopairs.active = false
+lvim.builtin.illuminate.active = false
 
-    -- Add overrides for LSP server settings, the keys are the name of the server
-    config = {
-      clangd = function()
-        return {
-          cmd = {
-            "clangd",
-            "--clang-tidy",
-            "--clang-tidy-checks=performance-*,bugprone-*",
-            "--completion-style=detailed",
-          },
-        }
-      end,
-      -- example for addings schemas to yamlls
-      -- yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
-      --   settings = {
-      --     yaml = {
-      --       schemas = {
-      --         ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*.{yml,yaml}",
-      --         ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
-      --         ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/*.{yml,yaml}",
-      --       },
-      --     },
-      --   },
-      -- },
-    },
-  },
-  -- Mapping data with "desc" stored directly by vim.keymap.set().
-  --
-  -- Please use this mappings table to set keyboard mapping since this is the
-  -- lower level configuration and more robust one. (which-key will
-  -- automatically pick-up stored data by this setting.)
-  mappings = {
-    -- first key is the mode
-    n = {
-      -- second key is the lefthand side of the map
-      -- mappings seen under group name "Buffer"
-      ["<leader>lg"] = { "<cmd>:lua require('neogen').generate()<CR>", desc = "generate comment" },
-      ["<leader><space>w"] = { "<cmd>:HopWord<cr>", desc = "Hop any word" },
-      ["<leader><space>b"] = { "<cmd>:HopWord<cr>", desc = "Hop any word" },
-      ["<leader><space>c"] = { "<cmd>:HopChar1<cr>", desc = "Hop any char" },
-      [";"] = { ":" },
-    },
-    t = {
-      -- setting a mapping to false will disable it
-      -- ["<esc>"] = false,
-    },
-  },
-  -- Configure require("lazy").setup() options
-  lazy = {
-    defaults = { lazy = true },
-    performance = {
-      rtp = {
-        -- customize default disabled vim plugins
-        disabled_plugins = { "tohtml", "gzip", "matchit", "zipPlugin", "netrwPlugin", "tarPlugin", "matchparen" },
-      },
-    },
-  },
-  -- Configure plugins
-  plugins = {
-    -- Plugin entries can also be used to override the default options for plugins as well
-    {
-      "goolord/alpha-nvim",
-      opts = function(_, opts)
-        -- customize the dashboard header
-        opts.section.header.val = {
-          " █████  ███████ ████████ ██████   ██████",
-          "██   ██ ██         ██    ██   ██ ██    ██",
-          "███████ ███████    ██    ██████  ██    ██",
-          "██   ██      ██    ██    ██   ██ ██    ██",
-          "██   ██ ███████    ██    ██   ██  ██████",
-          " ",
-          "    ███    ██ ██    ██ ██ ███    ███",
-          "    ████   ██ ██    ██ ██ ████  ████",
-          "    ██ ██  ██ ██    ██ ██ ██ ████ ██",
-          "    ██  ██ ██  ██  ██  ██ ██  ██  ██",
-          "    ██   ████   ████   ██ ██      ██",
-        }
-        return opts
-      end,
-    },
-    {
-      "AstroNvim/astrocommunity",
-      { import = "astrocommunity.lsp.lsp-inlayhints-nvim" },
-      {
-        import = "astrocommunity.motion.flash-nvim",
-        keys = {
-          { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-          { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-          { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-          { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-          { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
-        },
-      },
-      { import = "astrocommunity.editing-support.neogen" },
-      { import = "astrocommunity.git.octo-nvim" },
-      { import = "astrocommunity.git.blame-nvim" },
-      { import = "astrocommunity.utility.telescope-fzy-native-nvim" },
-    },
-    {
-      "jose-elias-alvarez/null-ls.nvim",
-      opts = function(_, config)
-        -- config variable is the default configuration table for the setup function call
-        local null_ls = require "null-ls"
+local mason_path = vim.fn.glob(vim.fn.stdpath "data" .. "/mason/")
+local codelldb_path = mason_path .. "bin/codelldb"
+local liblldb_path = mason_path .. "packages/codelldb/extension/lldb/lib/liblldb"
+local formatters = require "lvim.lsp.null-ls.formatters"
 
-        -- Check supported formatters and linters
-        -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
-        -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
-        config.sources = {
-          -- Set a formatter
-          null_ls.builtins.formatting.stylua,
-          null_ls.builtins.formatting.prettier,
-          null_ls.builtins.formatting.clang_format,
-        }
-        return config -- return final config table
-      end,
-    },
-    {
-      "nvim-treesitter/nvim-treesitter",
-      opts = {
-        ensure_installed = { "lua", "python", "c", "cpp", "rust", "go", "svelte", "typescript", "javascript", "cmake" },
-      },
-    },
-    -- use mason-lspconfig to configure LSP installations
-    {
-      "williamboman/mason-lspconfig.nvim",
-      -- overrides `require("mason-lspconfig").setup(...)`
-      opts = {
-        ensure_installed = {
-          "bashls",
-          "clangd",
-          "cmake",
-          "dockerls",
-          "golangci_lint_ls",
-          "gopls",
-          "jsonls",
-          "lua_ls",
-          "pylsp",
-          "rust_analyzer",
-          "svelte",
-          "tssserver",
-          "yamlls",
-          "cssls",
-        },
-      },
-    },
-    -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
-    {
-      "jay-babu/mason-null-ls.nvim",
-      -- overrides `require("mason-null-ls").setup(...)`
-      opts = {
-        ensure_installed = {
-          "prettier",
-          "stylua",
-          "clang_format",
-          "cmakelang",
-          "hadolint",
-          "golangci_lint",
-          "golines",
-          "goimports",
-          "jq",
-          "shfmt",
-        },
-      },
-    },
-    {
-      "jay-babu/mason-nvim-dap.nvim",
-      -- overrides `require("mason-nvim-dap").setup(...)`
-      opts = {
-        -- ensure_installed = { "python" },
-      },
-    },
-    {
-      "rcarriga/nvim-notify",
-      enabled = false,
-    },
-    {
-      "nvim-telescope/telescope-fzf-native.nvim",
-      enabled = false,
-    },
-    {
-      "phaazon/hop.nvim",
-      branch = "v2",
-      config = function() require("hop").setup {} end,
-      lazy = false,
-      opts = {},
-    },
-  },
-  -- This function is run last and is a good place to configuring
-  -- augroups/autocommands and custom filetypes also this just pure lua so
-  -- anything that doesn't fit in the normal config locations above can go here
-  polish = function() end,
+formatters.setup {
+  { command = "goimports", filetypes = { "go" } },
+  { command = "gofumpt",   filetypes = { "go" } },
 }
 
-return config
+-- some settings can only passed as commandline flags, see `clangd --help`
+local clangd_flags = {
+  "--background-index",
+  "--fallback-style=Google",
+  "--all-scopes-completion",
+  "--clang-tidy",
+  "--log=error",
+  "--suggest-missing-includes",
+  "--cross-file-rename",
+  "--completion-style=detailed",
+  "--pch-storage=memory",     -- could also be disk
+  "--folding-ranges",
+  "--enable-config",          -- clangd 11+ supports reading from .clangd configuration file
+  "--offset-encoding=utf-16", --temporary fix for null-ls
+  -- "--limit-references=1000",
+  -- "--limit-resutls=1000",
+  -- "--malloc-trim",
+  -- "--clang-tidy-checks=-*,llvm-*,clang-analyzer-*,modernize-*,-modernize-use-trailing-return-type",
+  -- "--header-insertion=never",
+  -- "--query-driver=<list-of-white-listed-complers>"
+}
+
+local provider = "clangd"
+
+local custom_on_attach = function(client, bufnr)
+  require("lvim.lsp").common_on_attach(client, bufnr)
+
+  local opts = { noremap = true, silent = true, buffer = bufnr }
+  vim.keymap.set("n", "<leader>lh", "<cmd>ClangdSwitchSourceHeader<cr>", opts)
+  vim.keymap.set("x", "<leader>lA", "<cmd>ClangdAST<cr>", opts)
+  vim.keymap.set("n", "<leader>lH", "<cmd>ClangdTypeHierarchy<cr>", opts)
+  vim.keymap.set("n", "<leader>lt", "<cmd>ClangdSymbolInfo<cr>", opts)
+  vim.keymap.set("n", "<leader>lm", "<cmd>ClangdMemoryUsage<cr>", opts)
+
+  require("clangd_extensions.inlay_hints").setup_autocmd()
+  require("clangd_extensions.inlay_hints").set_inlay_hints()
+end
+
+local clangd_status_ok, project_config = pcall(require, "rhel.clangd_wrl")
+if clangd_status_ok then
+  clangd_flags = vim.tbl_deep_extend("keep", project_config, clangd_flags)
+end
+
+pcall(function()
+  require("rust-tools").setup {
+    tools = {
+      executor = require("rust-tools/executors").termopen, -- can be quickfix or termopen
+      reload_workspace_from_cargo_toml = true,
+      runnables = {
+        use_telescope = true,
+      },
+      inlay_hints = {
+        auto = true,
+        only_current_line = false,
+        show_parameter_hints = false,
+        parameter_hints_prefix = "<-",
+        other_hints_prefix = "=>",
+        max_len_align = false,
+        max_len_align_padding = 1,
+        right_align = false,
+        right_align_padding = 7,
+        highlight = "Comment",
+      },
+      hover_actions = {
+        border = "rounded",
+      },
+      on_initialized = function()
+        vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter", "CursorHold", "InsertLeave" }, {
+          pattern = { "*.rs" },
+          callback = function()
+            local _, _ = pcall(vim.lsp.codelens.refresh)
+          end,
+        })
+      end,
+    },
+    dap = {
+      -- adapter= codelldb_adapter,
+      adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
+    },
+    server = {
+      on_attach = function(client, bufnr)
+        require("lvim.lsp").common_on_attach(client, bufnr)
+        local rt = require "rust-tools"
+        vim.keymap.set("n", "K", rt.hover_actions.hover_actions, { buffer = bufnr })
+      end,
+
+      capabilities = require("lvim.lsp").common_capabilities(),
+      settings = {
+        ["rust-analyzer"] = {
+          lens = {
+            enable = true,
+          },
+          checkOnSave = {
+            enable = true,
+            command = "clippy",
+          },
+        },
+      },
+    },
+  }
+end)
+
+local custom_on_init = function(client, bufnr)
+  require("lvim.lsp").common_on_init(client, bufnr)
+  require("clangd_extensions.config").setup {}
+  require("clangd_extensions.ast").init()
+  vim.cmd [[
+  command ClangdToggleInlayHints lua require('clangd_extensions.inlay_hints').toggle_inlay_hints()
+  command -range ClangdAST lua require('clangd_extensions.ast').display_ast(<line1>, <line2>)
+  command ClangdTypeHierarchy lua require('clangd_extensions.type_hierarchy').show_hierarchy()
+  command ClangdSymbolInfo lua require('clangd_extensions.symbol_info').show_symbol_info()
+  command -nargs=? -complete=customlist,s:memuse_compl ClangdMemoryUsage lua require('clangd_extensions.memory_usage').show_memory_usage('<args>' == 'expand_preamble')
+  ]]
+end
+
+local opts = {
+  cmd = { provider, unpack(clangd_flags) },
+  on_attach = custom_on_attach,
+  on_init = custom_on_init,
+}
+
+require("lvim.lsp.manager").setup("clangd", opts)
+
+local lsp_manager = require "lvim.lsp.manager"
+lsp_manager.setup("golangci_lint_ls", {
+  on_init = require("lvim.lsp").common_on_init,
+  capabilities = require("lvim.lsp").common_capabilities(),
+})
+
+lsp_manager.setup("gopls", {
+  on_attach = function(client, bufnr)
+    require("lvim.lsp").common_on_attach(client, bufnr)
+    local _, _ = pcall(vim.lsp.codelens.refresh)
+    local map = function(mode, lhs, rhs, desc)
+      if desc then
+        desc = desc
+      end
+
+      vim.keymap.set(mode, lhs, rhs, { silent = true, desc = desc, buffer = bufnr, noremap = true })
+    end
+    map("n", "<leader>Ci", "<cmd>GoInstallDeps<Cr>", "Install Go Dependencies")
+    map("n", "<leader>Ct", "<cmd>GoMod tidy<cr>", "Tidy")
+    map("n", "<leader>Ca", "<cmd>GoTestAdd<Cr>", "Add Test")
+    map("n", "<leader>CA", "<cmd>GoTestsAll<Cr>", "Add All Tests")
+    map("n", "<leader>Ce", "<cmd>GoTestsExp<Cr>", "Add Exported Tests")
+    map("n", "<leader>Cg", "<cmd>GoGenerate<Cr>", "Go Generate")
+    map("n", "<leader>Cf", "<cmd>GoGenerate %<Cr>", "Go Generate File")
+    map("n", "<leader>Cc", "<cmd>GoCmt<Cr>", "Generate Comment")
+    map("n", "<leader>DT", "<cmd>lua require('dap-go').debug_test()<cr>", "Debug Test")
+  end,
+  on_init = require("lvim.lsp").common_on_init,
+  capabilities = require("lvim.lsp").common_capabilities(),
+  settings = {
+    gopls = {
+      usePlaceholders = true,
+      gofumpt = true,
+      codelenses = {
+        generate = false,
+        gc_details = true,
+        test = true,
+        tidy = true,
+      },
+    },
+  },
+})
+
+local gopher_status_ok, gopher = pcall(require, "gopher")
+if not gopher_status_ok then
+  return
+end
+
+gopher.setup {
+  commands = {
+    go = "go",
+    gomodifytags = "gomodifytags",
+    gotests = "gotests",
+    impl = "impl",
+    iferr = "iferr",
+  },
+}
+
+-- install codelldb with :MasonInstall codelldb
+-- configure nvim-dap (codelldb)
+lvim.builtin.dap.on_config_done = function(dap)
+  dap.adapters.codelldb = {
+    type = "server",
+    port = "${port}",
+    executable = {
+      -- provide the absolute path for `codelldb` command if not using the one installed using `mason.nvim`
+      command = "codelldb",
+      args = { "--port", "${port}" },
+
+      -- On windows you may have to uncomment this:
+      -- detached = false,
+    },
+  }
+
+  dap.configurations.cpp = {
+    {
+      name = "Launch file",
+      type = "codelldb",
+      request = "launch",
+      program = function()
+        local path
+        vim.ui.input({ prompt = "Path to executable: ", default = vim.loop.cwd() .. "/build/" }, function(input)
+          path = input
+        end)
+        vim.cmd [[redraw]]
+        return path
+      end,
+      cwd = "${workspaceFolder}",
+      stopOnEntry = false,
+    },
+  }
+
+  dap.configurations.c = dap.configurations.cpp
+
+  dap.adapters.codelldb = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path)
+  dap.configurations.rust = {
+    {
+      name = "Launch file",
+      type = "codelldb",
+      request = "launch",
+      program = function()
+        return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+      end,
+      cwd = "${workspaceFolder}",
+      stopOnEntry = false,
+    },
+  }
+end
